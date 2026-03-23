@@ -1,0 +1,26 @@
+longhorn:
+  metrics:
+    serviceMonitor:
+      additionalLabels:
+        monitoring.instance: "controlplane-prod"
+  defaultSettings:
+    defaultReplicaCount: "1"
+  persistence:
+    defaultClass: true
+    defaultClassReplicaCount: 1
+  ingress:
+    ingressClassName: traefik
+    host: controlplane-prod.172.18.255.254.traefik.me
+    tls: true
+    tlsSecret: tls-longhorn
+    path: "/longhorn(/|$)(.*)" # see path problems https://github.com/longhorn/longhorn/issues/1745
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-staging
+
+namespace:
+  labels:
+    project-name: "controlplane"
+    stage: "prod"
+    pod-security.kubernetes.io/enforce: privileged
+    pod-security.kubernetes.io/audit: privileged
+    pod-security.kubernetes.io/warn: privileged

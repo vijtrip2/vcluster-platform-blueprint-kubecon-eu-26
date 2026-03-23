@@ -1,0 +1,55 @@
+clusters:
+  - name: controlplane
+    stage: prod
+    type: controlplane
+    dnsName: controlplane-prod.172.18.255.254.traefik.me
+    ingressClassName: traefik
+    services:
+      argocd:
+        status: activated
+        repo:
+          https:
+            customer:
+              url: https://github.com/vijtrip2/vcluster-platform-blueprint-kubecon-eu-26
+              targetRevision: main
+            managed:
+              url: https://github.com/vijtrip2/vcluster-platform-blueprint-kubecon-eu-26
+              targetRevision: main
+      certManager:
+        status: activated
+        clusterIssuer:
+          name: letsencrypt-staging
+          email: yourname@your-domain.de
+          server: https://acme-staging-v02.api.letsencrypt.org/directory
+      externalDns:
+        status: deactivated
+      externalSecrets:
+        status: activated
+      kubePrometheusStack:
+        status: deactivated
+      traefik:
+        status: activated
+      kyverno:
+        status: deactivated
+      kyvernoPolicies:
+        status: deactivated
+      kyvernoPolicyReport:
+        status: deactivated
+      loki:
+        status: deactivated
+      homerDashboard:
+        status: activated
+      oauth2Proxy:
+        status: deactivated
+      metricsServer:
+        status: deactivated
+      metalLb:
+        status: deactivated
+      longhorn:
+        status: deactivated
+      gpuOperator:
+        status: deactivated
+      ollama:
+        status: deactivated
+      kagent:
+        status: deactivated

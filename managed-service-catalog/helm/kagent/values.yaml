@@ -1,0 +1,89 @@
+kagent:
+  providers:
+    default: ollama
+    ollama:
+      provider: Ollama
+      model: "gpt-oss:20b"
+      config:
+        host: http://ollama.ollama.svc.cluster.local:11434
+        options:
+          num_ctx: "64000"
+
+  kagent-tools:
+    fullnameOverride: kagent-tools
+    enabled: true
+    replicaCount: 1
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+    tools:
+      loglevel: "debug"
+
+# ==============================================================================
+# KMCP
+# ==============================================================================
+  kmcp:
+    enabled: false
+    nameOverride: "kmcp"
+
+# ==============================================================================
+# AGENTS
+# ==============================================================================
+  agents:
+    k8s-agent:
+      enabled: true
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: 1000m
+          memory: 1Gi
+    kgateway-agent:
+      enabled: false
+    istio-agent:
+      enabled: false
+    promql-agent:
+      enabled: false
+    observability-agent:
+      enabled: false
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: 1000m
+          memory: 1Gi
+    argo-rollouts-agent:
+      enabled: false
+    helm-agent:
+      enabled: true
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: 1000m
+          memory: 1Gi
+    cilium-policy-agent:
+      enabled: false
+    cilium-manager-agent:
+      enabled: false
+    cilium-debug-agent:
+      enabled: false
+
+# ==============================================================================
+# MCP TOOLS
+# ==============================================================================
+  tools:
+    grafana-mcp:
+      enabled: false
+    querydoc:
+      enabled: true
+
+ingress:
+  enabled: false

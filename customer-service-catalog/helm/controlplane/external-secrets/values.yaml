@@ -1,0 +1,26 @@
+clusterSecretStores: {}
+namespace:
+  labels:
+    project-name: "controlplane"
+    stage: "prod"
+external-secrets:
+  serviceMonitor:
+    additionalLabels:
+      monitoring.instance: "controlplane-prod"
+  bitwarden-sdk-server:
+    enabled: true
+
+
+certificate:
+  name: bitwarden-sdk-server-cert
+  issuerName: bitwarden-sdk-selfsigned
+  secretName: bitwarden-tls-certs
+  commonName: bitwarden-sdk-server.external-secrets.svc
+  dnsNames:
+    - bitwarden-sdk-server
+    - bitwarden-sdk-server.external-secrets
+    - bitwarden-sdk-server.external-secrets.svc
+    - bitwarden-sdk-server.external-secrets.svc.cluster.local
+
+issuer:
+  name: bitwarden-sdk-selfsigned

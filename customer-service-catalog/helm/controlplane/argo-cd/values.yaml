@@ -1,0 +1,178 @@
+bootstrapValues:
+  projects:
+    controlplane-prod:
+      name: "controlplane-prod"
+      namespace: argocd
+      description: "controlplane-prod project"
+      sourceRepos:
+        - "registry.onstackit.cloud/stackit-edge-cloud-blueprint"
+      orphanedResources:
+        warn: false
+        ignore:
+          - kind: Secret
+            name: cert-manager-webhook-ca
+
+  applicationSets:
+    controlplane-prod:
+      projectName: "controlplane-prod"
+      managedServices:
+        repoURL: "https://github.com/vijtrip2/vcluster-platform-blueprint-kubecon-eu-26"
+        path: "managed-service-catalog/helm"
+        targetRevision: "main"
+      customerServices:
+        repoURL: "https://github.com/vijtrip2/vcluster-platform-blueprint-kubecon-eu-26"
+        path: "customer-service-catalog/helm"
+        targetRevision: "main"
+      apps:
+        argocd:
+          name: argocd
+          path: argo-cd
+        kyverno:
+          name: kyverno
+          path: kyverno
+        kyverno-policies:
+          name: kyverno-policies
+          path: kyverno-policies
+        external-secrets:
+          name: external-secrets
+          path: external-secrets
+        cert-manager:
+          name: cert-manager
+          path: cert-manager
+        metallb:
+          name: metallb
+          path: metallb
+        external-dns:
+          name: external-dns
+          path: external-dns
+        oauth2-proxy:
+          name: oauth2-proxy
+          path: oauth2-proxy
+        longhorn:
+          name: longhorn
+          path: longhorn
+        kube-prometheus-stack:
+          name: kube-prometheus-stack
+          path: kube-prometheus-stack
+        loki:
+          name: loki
+          path: loki
+        kyverno-policy-reporter:
+          name: kyverno-policy-reporter
+          path: kyverno-policy-reporter
+        homer-dashboard:
+          name: homer-dashboard
+          path: homer-dashboard
+        metrics-server:
+          name: metrics-server
+          path: metrics-server
+        vcluster:
+          name: vcluster
+          path: vcluster
+        traefik:
+          name: traefik
+          path: traefik
+        ollama:
+          name: ollama
+          path: ollama
+        gpu-operator:
+          name: gpu-operator
+          path: gpu-operator
+        kagent:
+          name: kagent
+          path: kagent
+
+namespace:
+  labels:
+    project-name: "controlplane"
+    stage: "prod"
+inClusterName: controlplane
+inClusterSecretLabels:
+##Controlplane labels
+  argocd: "activated"
+  cert-manager: "activated"
+  external-dns: "deactivated"
+  external-secrets: "activated"
+  kube-prometheus-stack: "deactivated"
+  traefik: "activated"
+  kyverno: "deactivated"
+  kyverno-policies: "deactivated"
+  kyverno-policy-reporter: "deactivated"
+  loki: "deactivated"
+  homer-dashboard: "activated"
+  oauth2-proxy: "deactivated"
+  metrics-server: "deactivated"
+  metallb: "deactivated"
+  longhorn: "deactivated"
+  gpu-operator: "deactivated"
+  ollama: "deactivated"
+  kagent: "deactivated"
+
+
+externalSecrets:
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: controlplane-prod
+
+  secretStores:
+    controlplane-prod:
+      kind: ClusterSecretStore
+      name: controlplane-prod
+
+
+additionalIngress:
+  enabled: true
+  className: traefik
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+  hosts:
+    - host: controlplane-prod.172.18.255.254.traefik.me
+      paths:
+        - path: /argocd
+          pathType: Prefix
+          backend:
+            service:
+              name: argocd-server
+              port:
+                number: 80
+
+argo-cd:
+  dex:
+    enabled: false
+  server:
+    extraArgs:
+      - --insecure
+      - --basehref=/argocd
+      - --rootpath=/argocd
+    ingressGrpc:
+      enabled: false
+      path: "/argocd"
+      ingressClassName: traefik
+      tls: true
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-staging
+    ingress:
+      path: "/argocd"
+      ingressClassName: traefik
+      tls: true
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-staging
+
+  configs:
+    rbac:
+      policy.default: role:readonly
+    params:
+      server.rootpath: /argocd
+      server.basehref: /argocd
+      server.insecure: true
+  global:
+    domain: controlplane-prod.172.18.255.254.traefik.me
+    revisionHistoryLimit: 5
+  controller:
+    metrics:
+      enabled: true
+      rules:
+        enabled: false
+      serviceMonitor:
+        additionalLabels:
+          monitoring.instance: "controlplane-prod"

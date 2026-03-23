@@ -1,0 +1,27 @@
+namespace:
+  labels:
+    project-name: "controlplane"
+    stage: "prod"
+policy-reporter:
+  replicaCount: 1
+  metrics:
+    enabled: true
+  monitoring:
+    serviceMonitor:
+      labels:
+        monitoring.instance: "controlplane-prod"
+  ui:
+    enabled: true
+    ingress:
+      className: traefik
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-staging
+      hosts:
+        - host: controlplane-prod.172.18.255.254.traefik.me
+          paths:
+            - path: "/kyverno"
+              pathType: Prefix
+      tls:
+        - secretName: tls-kyverno-ui
+          hosts:
+            - controlplane-prod.172.18.255.254.traefik.me

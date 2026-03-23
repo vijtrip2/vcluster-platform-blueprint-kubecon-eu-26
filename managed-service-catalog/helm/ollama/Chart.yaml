@@ -1,0 +1,12 @@
+apiVersion: v2
+name: ollama
+description: Umbrella Chart for ollama
+type: application
+version: 0.16.4
+dependencies:
+  - name: ollama
+    repository: https://helm.otwld.com/
+    version: 1.45.0
+  - name: template-library
+    repository: file://../template-library
+    version: 0.0.9

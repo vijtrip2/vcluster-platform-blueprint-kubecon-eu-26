@@ -1,0 +1,20 @@
+ollama:
+  gpu:
+    enabled: true
+  type: "nvidia"
+  number: 1
+  resources:
+    limits:
+      nvidia.com/gpu: 1
+    requests:
+      nvidia.com/gpu: 1
+  persistentVolume:
+    enabled: true
+    accessModes:
+      - ReadWriteOnce
+    size: 50Gi
+    storageClass: ""
+  ollama:
+    models:
+      pull:
+        - llama3.2

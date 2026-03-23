@@ -1,0 +1,8 @@
+gpu-operator:
+  operator:
+    repository: nvcr.io/nvidia
+    image: gpu-operator
+    imagePullPolicy: IfNotPresent
+    imagePullSecrets: []
+    priorityClassName: system-node-critical
+    runtimeClass: nvidia

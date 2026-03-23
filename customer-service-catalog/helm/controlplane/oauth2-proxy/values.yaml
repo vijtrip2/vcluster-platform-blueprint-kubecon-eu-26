@@ -1,0 +1,56 @@
+namespace:
+  labels:
+    project-name: "controlplane"
+    stage: "prod"
+
+
+externalSecrets:
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: controlplane-prod
+
+  secretStores:
+    controlplane-prod:
+      kind: ClusterSecretStore
+      name: controlplane-prod
+
+  secrets:
+    oauth2-credentials:
+      secretStoreRef: controlplane-prod
+      data:
+        - remoteKey: controlplane-prod-oauth2-client-id
+          secretKey: client-id
+        - remoteKey: controlplane-prod-oauth2-client-secret
+          secretKey: client-secret
+        - remoteKey: controlplane-prod-oauth2-cookie-secret
+          secretKey: cookie-secret
+
+oauth2-proxy:
+  config:
+    existingSecret: oauth2-credentials
+    configFile: |-
+      reverse_proxy = true
+      redirect_url = "https://controlplane-prod.172.18.255.254.traefik.me/oauth2/callback"
+      email_domains = [ "*" ]
+      cookie_secure = true
+      upstreams = [ "static://200" ]
+      provider = "github"
+      scope = "read:user user:email read:org"
+  ingress:
+    className: traefik
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-staging
+    enabled: true
+    path: /oauth2
+    pathType: Prefix
+    hosts:
+      - controlplane-prod.172.18.255.254.traefik.me
+    tls:
+      - secretName: tls-oauth2-proxy
+        hosts:
+          - controlplane-prod.172.18.255.254.traefik.me
+  metrics:
+    serviceMonitor:
+      labels:
+        monitoring.instance: "controlplane-prod"
+

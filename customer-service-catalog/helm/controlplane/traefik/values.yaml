@@ -1,0 +1,16 @@
+traefik:
+  api:
+    dashboard: true
+  ingressRoute:
+    dashboard:
+      activated: false
+  metrics:
+    prometheus:
+      serviceMonitor:
+        additionalLabels:
+          monitoring.instance: "controlplane-prod"
+
+namespace:
+  labels:
+    project-name: "controlplane"
+    stage: "prod"

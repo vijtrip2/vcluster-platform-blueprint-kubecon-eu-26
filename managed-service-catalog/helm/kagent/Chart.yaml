@@ -1,0 +1,16 @@
+apiVersion: v2
+name: kagent
+description: Umbrella Chart for kagent
+type: application
+version: 0.4.3
+
+dependencies:
+  - name: kagent
+    repository: oci://ghcr.io/kagent-dev/kagent/helm
+    version: 0.7.18
+  - name: kagent-crds
+    repository: oci://ghcr.io/kagent-dev/kagent/helm
+    version: 0.7.18
+  - name: template-library
+    repository: file://../template-library
+    version: 0.0.9

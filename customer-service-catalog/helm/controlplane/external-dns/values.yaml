@@ -1,0 +1,73 @@
+externalSecrets:
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: controlplane-prod
+
+  secretStores:
+    controlplane-prod:
+      kind: ClusterSecretStore
+      name: controlplane-prod
+
+  secrets:
+    external-dns-webhook:
+      secretStoreRef: controlplane-prod
+      data:
+        - remoteKey: controlplane-prod-external-dns-project-id
+          secretKey: PROJECT_ID
+        - remoteKey: controlplane-prod-external-dns-sa-key-json
+          secretKey: SA_KEY_JSON
+
+namespace:
+  labels:
+    project-name: "controlplane"
+    stage: "prod"
+external-dns:
+  txtOwnerId: controlplane-prod
+  domainFilters:
+    - controlplane-prod.172.18.255.254.traefik.me
+  extraArgs:
+    - --source=traefik-proxy
+  rbac:
+    create: true
+    additionalPermissions:
+      - apiGroups: ["traefik.io"]
+        resources:
+          - ingressroutes
+          - ingressroutetcps
+          - ingressrouteudps
+          - tlsoptions
+          - tlsstores
+        verbs: ["get", "watch", "list"]
+      - apiGroups: [""]
+        resources:
+          - "namespaces"
+        verbs: ["get", "watch", "list"]
+  extraVolumes:
+    - name: stackit-sa-authentication
+      secret:
+        secretName: external-dns-webhook
+        items:
+          - key: SA_KEY_JSON
+            path: sa_key.json
+  global:
+    security:
+      allowInsecureImages: true
+  provider:
+    webhook:
+      image:
+        repository: ghcr.io/stackitcloud/external-dns-stackit-webhook
+        tag: v0.3.6
+      extraVolumeMounts:
+        - name: stackit-sa-authentication
+          mountPath: /var/run/secrets/stackit
+      env:
+        - name: AUTH_KEY_PATH
+          value: /var/run/secrets/stackit/sa_key.json
+        - name: PROJECT_ID
+          valueFrom:
+            secretKeyRef:
+              name: external-dns-webhook
+              key: PROJECT_ID
+  serviceMonitor:
+    additionalLabels:
+      monitoring.instance: "controlplane-prod"

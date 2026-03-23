@@ -1,0 +1,31 @@
+crds:
+  install: true
+
+namespace:
+  labels:
+    project-name: "controlplane"
+    stage: "prod"
+
+kyverno:
+  admissionController:
+    serviceMonitor:
+      additionalLabels:
+        monitoring.instance: "controlplane-prod"
+  backgroundController:
+    serviceMonitor:
+      additionalLabels:
+        monitoring.instance: "controlplane-prod"
+  cleanupController:
+    serviceMonitor:
+      additionalLabels:
+        monitoring.instance: "controlplane-prod"
+  reportsController:
+    serviceMonitor:
+      additionalLabels:
+        monitoring.instance: "controlplane-prod"
+  # FIX: https://github.com/kyverno/kyverno/issues/15116
+  kyverno-api:
+    labels:
+      app.kubernetes.io/managed-by: Helm
+    annotations:
+      meta.helm.sh/release-name: kyverno

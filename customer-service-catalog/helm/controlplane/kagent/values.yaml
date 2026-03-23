@@ -1,0 +1,26 @@
+kagent:
+  providers:
+    default: ollama
+    ollama:
+      provider: Ollama
+      model: "gpt-oss:20b"
+      config:
+        host: http://ollama.ollama.svc.cluster.local:11434
+        options:
+          num_ctx: "64000"
+
+  agents:
+    k8s-agent:
+      enabled: true
+    helm-agent:
+      enabled: true
+
+
+ingress:
+  enabled: true
+  className: traefik
+  host: kagent.controlplane-prod.172.18.255.254.traefik.me
+  path: /
+  pathType: Prefix
+  serviceName: kagent-ui
+  servicePort: 8080

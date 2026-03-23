@@ -1,0 +1,16 @@
+ollama:
+  gpu:
+    enabled: true
+  type: "nvidia"
+  number: 1
+  resources:
+    limits:
+      nvidia.com/gpu: 1
+    requests:
+      nvidia.com/gpu: 1
+  nodeSelector:
+    nvidia.com/gpu.present: "true"
+  ollama:
+    models:
+      pull:
+        - gpt-oss:20b

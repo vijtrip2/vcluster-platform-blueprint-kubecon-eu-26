@@ -1,0 +1,12 @@
+apiVersion: v2
+name: gpu-operator
+description: Helm chart for deploying NVIDIA GPU Operator
+type: application
+version: 0.0.1
+dependencies:
+  - name: gpu-operator
+    repository: https://helm.ngc.nvidia.com/nvidia
+    version: v25.10.1
+  - name: template-library
+    repository: file://../template-library
+    version: 0.0.9

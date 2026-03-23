@@ -1,0 +1,9 @@
+namespace:
+  labels:
+    project-name: "controlplane"
+    stage: "prod"
+metrics-server:
+  serviceMonitor:
+    additionalLabels:
+      monitoring:
+        instance: "controlplane-prod"
